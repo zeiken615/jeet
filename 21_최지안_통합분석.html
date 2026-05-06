@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>최지안 — 2026 주간테스트 1차시 통합 분석</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap');
+:root{
+  --navy:#0e2d5e;--teal:#0d8a98;--gold:#f0b429;
+  --red:#991b1b;--violet:#7c3aed;--green:#166534;--amber:#b45309;
+  --ink:#0f172a;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:#d0d8ec;color:var(--ink);line-height:1.72}
+body::before{content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(-55deg,transparent 0,transparent 28px,rgba(255,255,255,.06) 28px,rgba(255,255,255,.06) 29px);
+  pointer-events:none;z-index:0}
+.page{max-width:960px;margin:0 auto;position:relative;z-index:1;padding-bottom:40px}
+
+/* ── COVER: 인라인 style로 배경 설정, ::after로 광택 오버레이만 추가 ── */
+.cover{
+  border-bottom:5px solid var(--gold);
+  position:relative;overflow:hidden;
+}
+.cover::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 700px 500px at 110% -10%, rgba(100,160,255,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 400px 400px at -5%  110%, rgba(255,255,255,.04) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(0,0,0,.18) 100%);
+}
+.cov{position:relative;z-index:1;padding:42px 50px 38px;display:grid;grid-template-columns:1fr auto;gap:0}
+.cov-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.22);color:var(--gold);font-size:10px;font-weight:700;
+  letter-spacing:.16em;padding:4px 14px;border-radius:3px;margin-bottom:14px}
+.cov-bar{width:48px;height:4px;background:var(--gold);border-radius:2px;margin-bottom:14px}
+.cov-name{font-size:50px;font-weight:900;color:#fff;line-height:1;letter-spacing:-.02em;margin-bottom:5px;
+  text-shadow:0 2px 16px rgba(0,0,0,.35)}
+.cov-school{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:22px}
+.cov-score-wrap{display:flex;align-items:flex-end;gap:6px;margin-bottom:22px}
+.cov-score{font-family:'IBM Plex Mono',monospace;font-size:76px;font-weight:900;color:var(--gold);line-height:1;
+  text-shadow:0 4px 24px rgba(0,0,0,.3)}
+.cov-score-unit{font-size:20px;color:rgba(255,255,255,.4);padding-bottom:12px}
+.cov-grade{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;
+  padding:5px 16px;border-radius:6px;margin-left:14px;padding-bottom:14px}
+.cov-meta{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid rgba(255,255,255,.12);padding-top:14px}
+.cm{font-size:11px;color:rgba(255,255,255,.38);padding-right:16px;margin-right:16px;border-right:1px solid rgba(255,255,255,.12)}
+.cm:last-child{border-right:none}
+.cm b{color:rgba(255,255,255,.75);font-weight:600}
+.cov-right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:34px;gap:12px}
+.cov-rank-box{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;padding:20px 24px;text-align:center;min-width:115px;
+  box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.crb-l{font-size:9px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.13em;margin-bottom:5px}
+.crb-v{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:900;color:var(--gold);line-height:1}
+.crb-s{font-size:10.5px;color:rgba(255,255,255,.38);margin-top:3px}
+.cov-avg-diff{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  border-radius:10px;padding:11px 16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.cad-l{font-size:9px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.cad-v{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;line-height:1}
+
+/* ── NAV ── */
+.nav{background:#fff;margin:0 18px;border-radius:0 0 12px 12px;padding:10px 20px;
+  display:flex;gap:5px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:4px}
+.nav a{font-size:11px;font-weight:600;color:var(--navy);text-decoration:none;
+  padding:4px 10px;border-radius:4px;background:var(--g100)}
+.nav a:hover{background:var(--g200)}
+
+/* ── SECTION ── */
+.sec{background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.07);margin:14px 18px;overflow:hidden}
+.sh{background:var(--navy);padding:12px 24px;display:flex;align-items:center;gap:10px}
+.sn{width:24px;height:24px;background:var(--gold);color:var(--navy);font-size:10px;font-weight:900;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.st{font-size:13.5px;font-weight:700;color:#fff}
+.sb{padding:22px 26px}
+.h3{font-size:12px;font-weight:700;color:var(--navy);border-left:4px solid var(--teal);
+  padding:2px 0 2px 10px;margin:20px 0 10px}
+.h3:first-child{margin-top:0}
+.h3.gold{border-left-color:var(--gold)}
+.sc-grid{display:grid;gap:10px;margin-bottom:16px}
+.sc5{grid-template-columns:repeat(5,1fr)}.sc4{grid-template-columns:repeat(4,1fr)}
+.scard{background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:13px 14px;border-top:3px solid var(--teal)}
+.scard.gld{border-top-color:var(--gold)}.scard.red{border-top-color:var(--red)}
+.scard.grn{border-top-color:#16a34a}.scard.vio{border-top-color:var(--violet)}.scard.amb{border-top-color:var(--amber)}
+.sc-l{font-size:9px;color:var(--g400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.sc-v{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;line-height:1;margin-bottom:2px;color:var(--teal)}
+.sc-s{font-size:10.5px;color:var(--g600)}
+.q-grid{display:grid;grid-template-columns:repeat(21,1fr);gap:2px;margin:4px 0}
+.q-cell{height:30px;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;border-radius:3px}
+.q-num{background:var(--g100);color:var(--g600);font-size:9px;font-weight:600}
+.q-ok{background:#dcfce7;color:#14532d}
+.q-ng{background:#fce7f3;color:#701a75}
+.q-correct{background:var(--navy);color:#fff;font-size:9px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--navy);color:#fff;font-weight:600;padding:8px 9px;text-align:left;font-size:11px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--g200)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--g50)}
+tbody td{padding:7px 9px;vertical-align:top;line-height:1.55}
+.tr-ok td{background:#f0fdf4}.tr-ng td{background:#fdf2f8}
+.call{display:flex;gap:10px;border-radius:8px;padding:11px 15px;margin:10px 0;font-size:12.5px;line-height:1.72}
+.ci{font-size:16px;flex-shrink:0;margin-top:1px}
+.call.info{background:#eff6ff;border-left:4px solid var(--navy)}
+.call.warn{background:#fffbeb;border-left:4px solid var(--amber)}
+.call.danger{background:#fef2f2;border-left:4px solid var(--red)}
+.call.ok{background:#f0fdf4;border-left:4px solid var(--green)}
+.call.vio{background:#f5f3ff;border-left:4px solid var(--violet)}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.bl{min-width:90px;color:var(--g600);font-size:11px;flex-shrink:0}
+.bt{flex:1;height:18px;background:var(--g100);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#fff}
+.bc{min-width:50px;font-size:11px;color:var(--g400);text-align:right;flex-shrink:0}
+.area-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.area-card{background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:14px;text-align:center}
+.area-title{font-size:10.5px;font-weight:700;color:var(--g600);margin-bottom:6px}
+.wd-card{border-radius:10px;border:1px solid var(--g200);overflow:hidden;margin-bottom:10px}
+.wd-head{padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wd-qnum{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:900;flex-shrink:0}
+.wd-title{font-size:13px;font-weight:700}
+.wd-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:auto}
+.wd-body{background:#fff;padding:13px 16px;font-size:12.5px;line-height:1.85}
+.wd-row{display:grid;grid-template-columns:72px 1fr;gap:6px;margin-bottom:8px}
+.wd-label{color:var(--g400);font-weight:600;font-size:11px;padding-top:2px;flex-shrink:0}
+.kp{background:var(--g50);border-radius:8px;padding:12px 16px;margin:8px 0}
+.kp-r{display:flex;gap:8px;font-size:12.5px;padding:3px 0;line-height:1.65}
+.kp-n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--teal);flex-shrink:0;min-width:18px;margin-top:2px}
+.step-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.step-card{border-radius:10px;overflow:hidden;border:1px solid var(--g200)}
+.step-head{padding:9px 14px;color:#fff;font-size:12px;font-weight:700}
+.step-body{background:#fff;padding:11px 14px;font-size:12px;line-height:1.85}
+.step-body ul{padding-left:14px}
+.step-body li{margin-bottom:5px}
+.step-wide{grid-column:1/-1}
+.part-label{text-align:center;margin:24px 18px 8px;font-size:11.5px;font-weight:700;
+  color:var(--g400);text-transform:uppercase;letter-spacing:.12em;display:flex;align-items:center;gap:10px}
+.part-label::before,.part-label::after{content:'';flex:1;height:1px;background:var(--g200)}
+.footer{text-align:center;padding:18px;font-size:11px;color:var(--g400);margin:0 18px}
+.footer b{color:var(--teal)}
+@media print{body{background:#fff;font-size:11px}body::before{display:none}
+  .page{max-width:100%}.sec{box-shadow:none;margin:8px 0;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="cover" style="background:linear-gradient(145deg,#0d1b2e 0%,#0f2550 55%,#1a3060 100%)">
+  <div class="cov">
+    <div>
+      <div class="cov-badge">📋 개인 성적표 + 내신분석 통합 보고서</div>
+      <div class="cov-bar"></div>
+      <div class="cov-name">최지안</div>
+      <div class="cov-school">청덕고 · M반 · 2026년 3월 4일 주간테스트 1차시</div>
+      <div class="cov-score-wrap">
+        <div class="cov-score">80.2</div>
+        <div class="cov-score-unit">/ 100점</div>
+        <div class="cov-grade" style="background:#ffedd5;color:#7c2d12">📈 2등급권</div>
+      </div>
+      <div class="cov-meta">
+        <div class="cm">범위 <b>지수 ~ 삼각함수의 그래프</b></div>
+        <div class="cm">정답 <b>17 / 21</b></div>
+        <div class="cm">반 석차 <b>15위 / 23명</b></div>
+        <div class="cm">반 평균 대비 <b style="color:var(--gold)">-3.6점</b></div>
+        <div class="cm">담당 <b>이동훈 선생님</b></div>
+      </div>
+    </div>
+    <div class="cov-right">
+      <div class="cov-rank-box">
+        <div class="crb-l">반 석차</div>
+        <div class="crb-v">15</div>
+        <div class="crb-s">위 / 23명</div>
+      </div>
+      <div class="cov-avg-diff">
+        <div class="cad-l">반 평균 대비</div>
+        <div class="cad-v" style="color:#991b1b">-3.6</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="#summary">📊 성적 요약</a>
+  <a href="#qgrid">📋 정오표</a>
+  <a href="#area">🧭 영역 분석</a>
+  <a href="#wrong">❌ 오답 분석</a>
+  <a href="#detail">📐 문항 상세</a>
+  <a href="#strategy">📚 학습 전략</a>
+  <a href="#report">📑 내신 분석 보고서</a>
+</div>
+
+<div class="part-label">PART 1 &nbsp; 개인 성적표</div>
+
+<div class="sec" id="summary">
+  <div class="sh"><div class="sn">1</div><div class="st">성적 요약</div></div>
+  <div class="sb">
+    <div class="sc-grid sc5">
+      <div class="scard gld"><div class="sc-l">총점</div><div class="sc-v" style="color:#b45309">80.2</div><div class="sc-s">/ 100점</div></div>
+      <div class="scard grn"><div class="sc-l">정답 문항</div><div class="sc-v" style="color:#16a34a">17</div><div class="sc-s">/ 21문항</div></div>
+      <div class="scard red"><div class="sc-l">오답</div><div class="sc-v" style="color:#991b1b">4</div><div class="sc-s">문항 · 실점 19.8점</div></div>
+      <div class="scard vio"><div class="sc-l">미응답</div><div class="sc-v" style="color:#7c3aed">0</div><div class="sc-s">문항 · 0점 손실</div></div>
+      <div class="scard"><div class="sc-l">반 석차</div><div class="sc-v">15</div><div class="sc-s">위 / 23명</div></div>
+    </div>
+    <div class="sc-grid sc4" style="margin-top:10px">
+      <div class="scard amb"><div class="sc-l">반 평균 대비</div><div class="sc-v" style="color:#991b1b;font-size:22px">-3.6</div><div class="sc-s">반 평균 83.8점</div></div>
+      <div class="scard"><div class="sc-l">취득 점수</div><div class="sc-v" style="font-size:22px">80.2</div><div class="sc-s">/ 100점</div></div>
+      <div class="scard red"><div class="sc-l">총 실점</div><div class="sc-v" style="color:#991b1b;font-size:22px">19.8</div><div class="sc-s">점</div></div>
+      <div class="scard grn"><div class="sc-l">정답률</div><div class="sc-v" style="color:#16a34a;font-size:22px">81.0</div><div class="sc-s">%</div></div>
+    </div>
+    <div class="call warn"><span class="ci">⚠</span><div>반 15위로 2등급권 성취입니다. 반 평균(83.8점) 대비 <b style="color:#991b1b">-3.6점</b> 뒤처져 있습니다. 주요 실점 구간은 8번, 10번, 19번, 20번입니다.</div></div>
+  </div>
+</div>
+
+<div class="sec" id="qgrid">
+  <div class="sh"><div class="sn">2</div><div class="st">문항별 정오표 (1~21번)</div></div>
+  <div class="sb">
+    <div class="h3">문항 번호</div>
+    <div class="q-grid"><div class="q-cell q-num">1</div><div class="q-cell q-num">2</div><div class="q-cell q-num">3</div><div class="q-cell q-num">4</div><div class="q-cell q-num">5</div><div class="q-cell q-num">6</div><div class="q-cell q-num">7</div><div class="q-cell q-num">8</div><div class="q-cell q-num">9</div><div class="q-cell q-num">10</div><div class="q-cell q-num">11</div><div class="q-cell q-num">12</div><div class="q-cell q-num">13</div><div class="q-cell q-num">14</div><div class="q-cell q-num">15</div><div class="q-cell q-num">16</div><div class="q-cell q-num">17</div><div class="q-cell q-num">18</div><div class="q-cell q-num">19</div><div class="q-cell q-num">20</div><div class="q-cell q-num">21</div></div>
+    <div class="h3">내 답안 <span style="font-size:10px;font-weight:400;color:var(--g400);margin-left:8px">초록=정답 / 분홍=오답 또는 미응답</span></div>
+    <div class="q-grid"><div class="q-cell q-ok">④</div><div class="q-cell q-ok">⑤</div><div class="q-cell q-ok">①</div><div class="q-cell q-ok">④</div><div class="q-cell q-ok">⑤</div><div class="q-cell q-ok">①</div><div class="q-cell q-ok">②</div><div class="q-cell q-ng">③</div><div class="q-cell q-ok">②</div><div class="q-cell q-ng">⑤</div><div class="q-cell q-ok">④</div><div class="q-cell q-ok">①</div><div class="q-cell q-ok">③</div><div class="q-cell q-ok">②</div><div class="q-cell q-ok">④</div><div class="q-cell q-ok">①</div><div class="q-cell q-ok">③</div><div class="q-cell q-ok">⑤</div><div class="q-cell q-ng">②</div><div class="q-cell q-ng">③</div><div class="q-cell q-ok">④</div></div>
+    <div class="h3" style="margin-top:6px">정답 확인</div>
+    <div class="q-grid"><div class="q-cell q-correct">④</div><div class="q-cell q-correct">⑤</div><div class="q-cell q-correct">①</div><div class="q-cell q-correct">④</div><div class="q-cell q-correct">⑤</div><div class="q-cell q-correct">①</div><div class="q-cell q-correct">②</div><div class="q-cell q-correct">②</div><div class="q-cell q-correct">②</div><div class="q-cell q-correct">③</div><div class="q-cell q-correct">④</div><div class="q-cell q-correct">①</div><div class="q-cell q-correct">③</div><div class="q-cell q-correct">②</div><div class="q-cell q-correct">④</div><div class="q-cell q-correct">①</div><div class="q-cell q-correct">③</div><div class="q-cell q-correct">⑤</div><div class="q-cell q-correct">⑤</div><div class="q-cell q-correct">②</div><div class="q-cell q-correct">④</div></div>
+    <div class="h3" style="margin-top:6px">득점 현황</div>
+    <div class="q-grid"><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.0</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.4</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.4</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.5</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.5</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.5</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.6</div><div class="q-cell" style="background:#fce7f3;color:#701a75;font-size:9px">0</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.6</div><div class="q-cell" style="background:#fce7f3;color:#701a75;font-size:9px">0</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.8</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.8</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.8</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.9</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.9</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+4.9</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+5.1</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+5.1</div><div class="q-cell" style="background:#fce7f3;color:#701a75;font-size:9px">0</div><div class="q-cell" style="background:#fce7f3;color:#701a75;font-size:9px">0</div><div class="q-cell" style="background:#dcfce7;color:#14532d;font-size:9px">+5.4</div></div>
+    <div class="h3 gold" style="margin-top:16px">틀린 문항 목록</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px"><span style="background:#1e40af;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px">8번 로그 응용</span><span style="background:#92400e;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px">10번 삼각함수 부등식</span><span style="background:#5b21b6;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px">19번 지수방정식 실근 조건 [킬러]</span><span style="background:#5b21b6;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px">20번 삼각함수 분할함수 [킬러]</span></div>
+  </div>
+</div>
+
+<div class="sec" id="area">
+  <div class="sh"><div class="sn">3</div><div class="st">영역별 정답률 분석</div></div>
+  <div class="sb">
+    <div class="area-grid">
+      <div class="area-card"><div class="area-title">지수·거듭제곱근<br><span style="font-size:9.5px;color:var(--g400)">(1·3·7·11번)</span></div><div style="margin:0 auto 4px"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#e2e8f0" stroke-width="8"/><circle cx="45" cy="45" r="34" fill="none" stroke="#0d8a98" stroke-width="8" stroke-dasharray="213.6 213.6" stroke-dashoffset="53.4" stroke-linecap="round"/><text x="45" y="46" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="700" fill="#0d8a98">100</text></svg></div><div style="font-size:11px;color:var(--g600)">4/4 정답</div></div>
+      <div class="area-card"><div class="area-title">로그<br><span style="font-size:9.5px;color:var(--g400)">(2·5·6·8·9·12·13·17번)</span></div><div style="margin:0 auto 4px"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#e2e8f0" stroke-width="8"/><circle cx="45" cy="45" r="34" fill="none" stroke="#7c3aed" stroke-width="8" stroke-dasharray="186.9 213.6" stroke-dashoffset="53.4" stroke-linecap="round"/><text x="45" y="46" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="700" fill="#7c3aed">88</text></svg></div><div style="font-size:11px;color:var(--g600)">7/8 정답</div></div>
+      <div class="area-card"><div class="area-title">삼각함수<br><span style="font-size:9.5px;color:var(--g400)">(4·10·14·15·16·18·20·21번)</span></div><div style="margin:0 auto 4px"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#e2e8f0" stroke-width="8"/><circle cx="45" cy="45" r="34" fill="none" stroke="#b45309" stroke-width="8" stroke-dasharray="160.2 213.6" stroke-dashoffset="53.4" stroke-linecap="round"/><text x="45" y="46" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="700" fill="#b45309">75</text></svg></div><div style="font-size:11px;color:var(--g600)">6/8 정답</div></div>
+      <div class="area-card"><div class="area-title">고난도 구간<br><span style="font-size:9.5px;color:var(--g400)">(17·19·20·21번)</span></div><div style="margin:0 auto 4px"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#e2e8f0" stroke-width="8"/><circle cx="45" cy="45" r="34" fill="none" stroke="#991b1b" stroke-width="8" stroke-dasharray="106.8 213.6" stroke-dashoffset="53.4" stroke-linecap="round"/><text x="45" y="46" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Mono,monospace" font-size="13" font-weight="700" fill="#991b1b">50</text></svg></div><div style="font-size:11px;color:var(--g600)">2/4 정답</div></div>
+    </div>
+    <div class="h3">반 평균 대비 영역별 정답률</div>
+    <div class="brow"><span class="bl">지수·거듭제곱근</span><div class="bt"><div class="bf" style="width:100%;background:#0d8a98">100%</div></div><span class="bc">반 평균 98%</span></div>
+    <div class="brow"><span class="bl">로그</span><div class="bt"><div class="bf" style="width:88%;background:#7c3aed">88%</div></div><span class="bc">반 평균 87%</span></div>
+    <div class="brow"><span class="bl">삼각함수</span><div class="bt"><div class="bf" style="width:75%;background:#b45309">75%</div></div><span class="bc">반 평균 85%</span></div>
+    <div class="brow"><span class="bl">고난도 구간</span><div class="bt"><div class="bf" style="width:50%;background:#991b1b">50%</div></div><span class="bc">반 평균 64%</span></div>
+  </div>
+</div>
+
+<div class="sec" id="wrong">
+  <div class="sh"><div class="sn">4</div><div class="st">오답·미응답 문항 심층 분석</div></div>
+  <div class="sb"><div class="wd-card">
+  <div class="wd-head" style="background:#dbeafe">
+    <div class="wd-qnum" style="background:#1e40af;color:#fff">8</div>
+    <div><div class="wd-title" style="color:#1e40af">로그 응용</div>
+    <div style="font-size:10.5px;color:#1e40af;opacity:.8">빛이 깊이에 따라 감소하는 상황을 로그로 모델링해 최대 깊이를 구하는 문제</div></div>
+    <div class="wd-diff" style="background:#1e40af;color:#fff">★★ 중하</div>
+    <div style="margin-left:6px;font-size:11px;font-weight:700;color:#991b1b">오답 — ③번 선택 (정답 ②번)</div>
+  </div>
+  <div class="wd-body">
+    <div class="wd-row"><span class="wd-label">배점·오답율</span><span>4.6점 · 반 전체 오답율 26.1%</span></div>
+    <div class="wd-row"><span class="wd-label">핵심 풀이</span><span>깊이가 일정 단위만큼 늘어날 때마다 빛이 일정 비율로 감소하는 구조를 지수함수로 표현하고, 조건에 해당하는 비율 이상이 되는 최대 깊이를 로그를 이용해 계산합니다.</span></div>
+    <div class="wd-row"><span class="wd-label">대비 방향</span><span>틀린 이유를 반드시 확인하고 같은 유형의 기출 문제를 추가로 풀어 완전히 숙달합니다.</span></div>
+  </div>
+</div><div class="wd-card">
+  <div class="wd-head" style="background:#fef9c3">
+    <div class="wd-qnum" style="background:#92400e;color:#fff">10</div>
+    <div><div class="wd-title" style="color:#92400e">삼각함수 부등식</div>
+    <div style="font-size:10.5px;color:#92400e;opacity:.8">두 삼각함수 부등식을 동시에 만족하는 해의 범위를 구하는 문제</div></div>
+    <div class="wd-diff" style="background:#92400e;color:#fff">★★★ 중</div>
+    <div style="margin-left:6px;font-size:11px;font-weight:700;color:#991b1b">오답 — ⑤번 선택 (정답 ③번)</div>
+  </div>
+  <div class="wd-body">
+    <div class="wd-row"><span class="wd-label">배점·오답율</span><span>4.6점 · 반 전체 오답율 17.4%</span></div>
+    <div class="wd-row"><span class="wd-label">핵심 풀이</span><span>각 부등식이 성립하는 구간을 단위원 위에서 하나씩 구하고, 두 조건을 동시에 만족하는 공통 구간을 찾아 합산합니다.</span></div>
+    <div class="wd-row"><span class="wd-label">대비 방향</span><span>틀린 이유를 반드시 확인하고 같은 유형의 기출 문제를 추가로 풀어 완전히 숙달합니다.</span></div>
+  </div>
+</div><div class="wd-card">
+  <div class="wd-head" style="background:#fce7f3">
+    <div class="wd-qnum" style="background:#5b21b6;color:#fff">19</div>
+    <div><div class="wd-title" style="color:#5b21b6">지수방정식 실근 조건 [킬러]</div>
+    <div style="font-size:10.5px;color:#5b21b6;opacity:.8">절댓값이 포함된 함수를 이용한 지수방정식이 세 실근을 가지는 경우의 수를 구하는 문제</div></div>
+    <div class="wd-diff" style="background:#5b21b6;color:#fff">★★★★★ 킬러</div>
+    <div style="margin-left:6px;font-size:11px;font-weight:700;color:#991b1b">오답 — ②번 선택 (정답 ⑤번)</div>
+  </div>
+  <div class="wd-body">
+    <div class="wd-row"><span class="wd-label">배점·오답율</span><span>5.3점 · 반 전체 오답율 56.5%</span></div>
+    <div class="wd-row"><span class="wd-label">핵심 풀이</span><span>지수방정식을 치환으로 이차방정식으로 변환하면 함수가 취할 수 있는 두 가지 값을 구할 수 있습니다. 두 경우 각각에서 절댓값 함수 그래프와 수평선의 교점 개수를 조건별로 분류하여, 합쳐서 세 개가 되는 순서쌍의 수를 셉니다.</span></div>
+    <div class="wd-row"><span class="wd-label">대비 방향</span><span>틀린 이유를 반드시 확인하고 같은 유형의 기출 문제를 추가로 풀어 완전히 숙달합니다.</span></div>
+  </div>
+</div><div class="wd-card">
+  <div class="wd-head" style="background:#fce7f3">
+    <div class="wd-qnum" style="background:#5b21b6;color:#fff">20</div>
+    <div><div class="wd-title" style="color:#5b21b6">삼각함수 분할함수 [킬러]</div>
+    <div style="font-size:10.5px;color:#5b21b6;opacity:.8">두 식으로 나뉜 삼각함수에서 방정식의 실근이 3개가 되도록 하는 값들의 합을 구하는 문제</div></div>
+    <div class="wd-diff" style="background:#5b21b6;color:#fff">★★★★★ 킬러</div>
+    <div style="margin-left:6px;font-size:11px;font-weight:700;color:#991b1b">오답 — ③번 선택 (정답 ②번)</div>
+  </div>
+  <div class="wd-body">
+    <div class="wd-row"><span class="wd-label">배점·오답율</span><span>5.3점 · 반 전체 오답율 17.4%</span></div>
+    <div class="wd-row"><span class="wd-label">핵심 풀이</span><span>두 구간으로 나뉜 삼각함수의 그래프를 각각 그립니다. 특정 값에서 수평선을 그었을 때 교점이 정확히 세 개가 되는 범위를 구간별로 파악하고, 이 값을 가지는 t를 모두 찾아 합산합니다.</span></div>
+    <div class="wd-row"><span class="wd-label">대비 방향</span><span>틀린 이유를 반드시 확인하고 같은 유형의 기출 문제를 추가로 풀어 완전히 숙달합니다.</span></div>
+  </div>
+</div></div>
+</div>
+
+<div class="sec" id="detail">
+  <div class="sh"><div class="sn">5</div><div class="st">전 문항 상세 분석표</div></div>
+  <div class="sb"><div class="tw"><table>
+    <thead><tr>
+      <th style="width:36px;text-align:center">문항</th>
+      <th style="width:42px;text-align:center">배점</th>
+      <th>단원 · 풀이 접근법</th>
+      <th style="width:120px;text-align:center">난이도</th>
+      <th style="width:100px;text-align:center">결과</th>
+      <th style="width:48px;text-align:center">득점</th>
+      <th style="width:60px;text-align:center">반 오답율</th>
+    </tr></thead>
+    <tbody><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">1</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.0</td>
+          <td><div style="font-weight:600;font-size:12px">거듭제곱근</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">n을 각각 대입하여 실수 제곱근의 개수를 구한 뒤 합산한다</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ④</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.0</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">2</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.4</td>
+          <td><div style="font-weight:600;font-size:12px">로그의 성질</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">주어진 상용로그 표 값으로 a, b를 파악하고 두 수의 비를 10의 거듭제곱으로 표현한다</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ⑤</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.4</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">13.0%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">3</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.4</td>
+          <td><div style="font-weight:600;font-size:12px">지수법칙·거듭제곱근</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">안쪽 루트부터 분수 지수로 변환하며 곱해 나가면 3의 거듭제곱 꼴로 정리된다</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ①</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.4</b></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">4</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 (사분면)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">좌표에서 빗변 길이를 구하고 사분면에 따라 삼각함수 부호를 결정하여 계산한다</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ④</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.5</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">5</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 그래프</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">로그함수와 직선이 세 교점을 가짐을 확인하고 역함수 관계로 교점 좌표 관계를 파악한다</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ⑤</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.5</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td><div style="font-weight:600;font-size:12px">로그 부등식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">밑이 1보다 작으므로 부등호 방향이 바뀌며, 진수 조건과의 교집합에서 정수 개수를 센다</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ①</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.5</b></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">7</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td><div style="font-weight:600;font-size:12px">지수 (합차 조건)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">합 조건을 제곱하여 곱을 구하고 합차 공식으로 차를 계산한 뒤 조합하여 식의 값을 구한다</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ②</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.6</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ng">
+          <td style="text-align:center;font-weight:900;font-size:13px">8</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td><div style="font-weight:600;font-size:12px">로그 응용</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">빛 감소 구조를 지수함수로 표현하고 로그를 취해 조건을 만족하는 최대 깊이를 계산한다</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center"><span style="color:#991b1b;font-weight:700">✗ ③→②</span></td>
+          <td style="text-align:center">0</td>
+          <td style="text-align:center;font-weight:700;color:#b45309">26.1%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">9</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 최댓값·최솟값</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">감소함수이므로 정의역 왼쪽 끝에서 최댓값, 오른쪽 끝에서 최솟값이 나타나 상수를 역산한다</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ②</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.6</b></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+        </tr><tr class="tr-ng">
+          <td style="text-align:center;font-weight:900;font-size:13px">10</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 부등식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">각 부등식의 해 구간을 단위원에서 구하고 동시에 만족하는 공통 구간을 합산한다</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center"><span style="color:#991b1b;font-weight:700">✗ ⑤→③</span></td>
+          <td style="text-align:center">0</td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">11</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td><div style="font-weight:600;font-size:12px">지수 연립 표현</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">구하는 수를 소인수분해하여 주어진 조건의 밑과 맞추고 두 문자로 표현한다</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ④</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.8</b></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">12</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td><div style="font-weight:600;font-size:12px">이차방정식 두 근 로그</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">근과 계수의 관계로 합과 곱을 구하고 밑 변환 공식으로 구하는 식을 정리한다</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ①</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.8</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">13</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td><div style="font-weight:600;font-size:12px">로그방정식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">밑을 통일하면 진수끼리 같은 방정식이 되며 진수 조건으로 해를 결정한다</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ③</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.8</b></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">14</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td><div style="font-weight:600;font-size:12px">부채꼴 넓이</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 부채꼴의 반지름 차와 호의 길이 비로 중심각을 구하고 넓이 차를 계산한다</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ②</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.9</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">15</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 합성</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">주기로 계수를, 최댓값·최솟값으로 진폭과 이동 상수를 결정하여 특정 위치 함수값을 구한다</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ④</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.9</b></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">16</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 (sin+cos → tan)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">합을 제곱하여 곱을 구하고 각도 범위에서 차의 부호를 결정하여 탄젠트를 계산한다</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ①</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+4.9</b></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">17</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.1</td>
+          <td><div style="font-weight:600;font-size:12px">로그 지수표현 비율 [준킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">양변에 로그를 취해 두 변수의 비율을 먼저 구하고 구하는 분수 꼴에 대입하여 정리한다</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ③</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+5.1</b></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">18</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.1</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 합성 최대·최소</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">각도 변환 후 항등식을 적용하여 코사인 하나의 식으로 바꾸고 이차함수로 최대·최솟값을 구한다</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ⑤</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+5.1</b></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+        </tr><tr class="tr-ng">
+          <td style="text-align:center;font-weight:900;font-size:13px">19</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.3</td>
+          <td><div style="font-weight:600;font-size:12px">지수방정식 실근 조건 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">치환으로 이차방정식을 풀어 함수값 두 가지를 구하고 절댓값 함수 교점 개수를 케이스별로 셈한다</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center"><span style="color:#991b1b;font-weight:700">✗ ②→⑤</span></td>
+          <td style="text-align:center">0</td>
+          <td style="text-align:center;font-weight:700;color:#991b1b">56.5%</td>
+        </tr><tr class="tr-ng">
+          <td style="text-align:center;font-weight:900;font-size:13px">20</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.3</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 분할함수 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 구간 삼각함수 그래프를 그려 수평선 교점이 세 개가 되는 경우를 구간별로 파악하여 합산한다</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center"><span style="color:#991b1b;font-weight:700">✗ ③→②</span></td>
+          <td style="text-align:center">0</td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+        </tr><tr class="tr-ok">
+          <td style="text-align:center;font-weight:900;font-size:13px">21</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.4</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 평행이동+넓이 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">이동량 사이의 관계를 조건에서 파악하고 특정 직선과 로그함수 교점에서 삼각형 넓이로 이동량을 역산한다</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-weight:700">✓ ④</span></td>
+          <td style="text-align:center"><b style='color:#16a34a'>+5.4</b></td>
+          <td style="text-align:center;font-weight:700;color:#991b1b">47.8%</td>
+        </tr></tbody>
+  </table></div></div>
+</div>
+
+<div class="sec" id="strategy">
+  <div class="sh"><div class="sn">6</div><div class="st">맞춤 학습 전략 — 최지안</div></div>
+  <div class="sb">
+    <div class="step-grid">
+          <div class="step-card"><div class="step-head" style="background:#92400e">⚡ 1단계 — 중하 구간 실점 제거</div>
+          <div class="step-body"><ul>
+            <li>밑이 1보다 작은 로그 부등식은 부등호 방향이 바뀌고 진수 조건도 별도로 처리해야 한다는 두 가지를 조건 확인 즉시 체크하는 습관을 만드세요.</li>
+            <li>로그 응용 문제는 감소 구조를 지수함수로 표현하고 로그를 취하는 두 단계를 순서대로 처리하는 흐름을 익히세요.</li>
+          </ul></div></div>
+          <div class="step-card"><div class="step-head" style="background:#78350f">🎯 2단계 — 중상 변별 문항 완성</div>
+          <div class="step-body"><ul>
+            <li>사인과 코사인의 합에서 탄젠트를 구하는 문제는 합을 제곱하여 곱을 구하고, 각도 범위에서 차의 부호를 결정하는 순서를 정형화하세요.</li>
+            <li>로그 지수표현 비율 변환 문제는 양변에 로그를 취해 비율을 먼저 구하는 첫 단계를 자동화하는 것이 핵심입니다.</li>
+          </ul></div></div>
+          <div class="step-card step-wide"><div class="step-head" style="background:#5b21b6">🔴 3단계 — 고난도 구간 구조 파악</div>
+          <div class="step-body"><ul>
+            <li>지수방정식 실근 조건 문제는 치환으로 두 가지 함수값을 구하고, 두 경우 각각에서 교점 개수를 케이스별로 분류하는 표를 그려가며 풀어야 합니다.</li>
+            <li>분할 삼각함수 방정식 문제는 두 구간의 그래프를 직접 스케치하고 수평선과의 교점이 세 개가 되는 경우를 꼼꼼하게 체크합니다.</li>
+            <li>로그함수 평행이동 넓이 문제는 이동 방향 결정, 교점 결정, 넓이 조건 역산의 네 단계 흐름을 순서대로 정형화합니다.</li>
+          </ul></div></div></div>
+    <div class="call vio" style="margin-top:12px"><span class="ci">🔴</span>
+      <div><strong>반 전체 공통 고난도 대비:</strong><br>
+      <b>가장 많이 틀린 문항(반 오답율 56.5%) — 지수방정식 실근 조건:</b> 치환으로 이차방정식을 풀어 함수값 두 가지를 구하고, 두 경우 각각에서 교점 개수를 케이스별로 나눠 표로 정리하는 방법을 최소 세 번 반복합니다.<br>
+      <b>두 번째로 많이 틀린 문항(반 오답율 47.8%) — 로그함수 평행이동 넓이:</b> 이동 방향 결정, 이동량 관계 파악, 직선과 로그함수 교점 결정, 삼각형 넓이 조건으로 이동량 역산의 네 단계 흐름을 순서대로 정형화합니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="part-label" id="report">PART 2 &nbsp; 2026 청덕고 내신 분석 보고서</div>
+
+<div class="sec">
+  <div class="sh"><div class="sn">7</div><div class="st">시험 개요 — 청덕고 SET 1_CD</div></div>
+  <div class="sb">
+    <div class="sc-grid sc4">
+      <div class="scard"><div class="sc-l">총 문항</div><div class="sc-v">21</div><div class="sc-s">객관식 전문항</div></div>
+      <div class="scard gld"><div class="sc-l">지수·로그</div><div class="sc-v" style="color:#b45309">13</div><div class="sc-s">전체의 약 62%</div></div>
+      <div class="scard red"><div class="sc-l">고난도·준킬러</div><div class="sc-v" style="color:#991b1b">4</div><div class="sc-s">17·19·20·21번</div></div>
+      <div class="scard vio"><div class="sc-l">삼각함수</div><div class="sc-v" style="color:#7c3aed">8</div><div class="sc-s">전체의 약 38%</div></div>
+    </div>
+    <div class="call info"><span class="ci">📌</span>
+      <div><strong>총평:</strong> 이번 시험은 지수와 거듭제곱근 기초부터 로그 방정식·부등식·함수, 삼각함수 사분면·그래프·방정식·부등식까지 고2 대수 1학기 핵심 범위 전체를 다루었습니다. 기초·중하 구간은 대부분의 학생이 정확히 처리했으나, 고난도 구간인 마지막 다섯 문항에서 점수 차이가 크게 벌어졌습니다. 전체 오답율이 가장 높은 문항은 지수방정식 실근 조건으로 반의 절반 이상이 틀렸으며, 로그함수 평행이동과 삼각형 넓이를 결합한 마지막 문항도 절반에 가까운 학생이 틀렸습니다.</div>
+    </div>
+    <div class="kp">
+      <div class="kp-r"><span class="kp-n">①</span><span>거듭제곱근과 사분면 삼각비 문항은 대부분의 학생이 정답을 맞혀 기초 개념이 잘 정착되어 있습니다.</span></div>
+      <div class="kp-r"><span class="kp-n">②</span><span>밑이 1보다 작은 로그 부등식과 로그 응용 문제에서 일부 학생이 실점하여 해당 개념을 추가로 보완할 필요가 있습니다.</span></div>
+      <div class="kp-r"><span class="kp-n">③</span><span>중상 구간인 이차방정식 두 근 로그 문제와 삼각함수 합성 문제는 절차를 정형화하면 2등급권 학생도 충분히 득점할 수 있습니다.</span></div>
+      <div class="kp-r"><span class="kp-n">④</span><span>고난도 구간 네 문항은 단순 계산이 아닌 그래프 분석·케이스 분류·다단계 역산 능력을 요구하며, 이 구간에서의 성취가 최상위 등급을 결정합니다.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><div class="sn">8</div><div class="st">전 문항 출제단원 · 난이도 · 출처 분류표</div></div>
+  <div class="sb"><div class="tw"><table>
+    <thead><tr>
+      <th style="width:36px;text-align:center">문항</th>
+      <th style="width:42px;text-align:center">배점</th>
+      <th style="width:42px;text-align:center">정답</th>
+      <th>단원 · 문제 유형 설명</th>
+      <th style="width:120px;text-align:center">난이도</th>
+      <th style="width:60px;text-align:center">반 오답율</th>
+      <th style="width:110px;text-align:center">출처 유형</th>
+    </tr></thead>
+    <tbody><tr style="background:">
+          <td style="text-align:center;font-weight:900">1</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.0</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">④</td>
+          <td><div style="font-weight:600;font-size:12px">거듭제곱근</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">5의 거듭제곱근 중 실수인 것의 개수를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#e0e7ff;color:#1e3a8a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">기본 개념 확인</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">2</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.4</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">⑤</td>
+          <td><div style="font-weight:600;font-size:12px">로그의 성질</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">주어진 상용로그 값을 이용해 두 수의 비를 계산하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">13.0%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">3</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.4</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">①</td>
+          <td><div style="font-weight:600;font-size:12px">지수법칙·거듭제곱근</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">겹쳐진 거듭제곱근을 지수법칙으로 정리해 유리수를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">4</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">④</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 (사분면)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">좌표 위의 점에서 동경이 나타내는 각의 삼각함수 값을 계산하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#e0e7ff;color:#1e3a8a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">기본 개념 확인</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">5</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">⑤</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 그래프</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">로그함수 그래프와 직선의 교점을 이용해 두 점 사이의 거리를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.5</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">①</td>
+          <td><div style="font-weight:600;font-size:12px">로그 부등식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">밑이 1보다 작은 로그 부등식을 풀어 정수 해의 개수를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">7</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">②</td>
+          <td><div style="font-weight:600;font-size:12px">지수 (합차 조건)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">루트 a와 그 역수의 합이 주어질 때 특정 지수식의 값을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dcfce7;color:#14532d;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★ 하</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">8</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">②</td>
+          <td><div style="font-weight:600;font-size:12px">로그 응용</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">빛이 깊이에 따라 감소하는 상황을 로그로 모델링해 최대 깊이를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★ 중하</span></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">26.1%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">9</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">②</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 최댓값·최솟값</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">제한된 정의역에서 로그함수의 최댓값과 최솟값을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">10</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.6</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">③</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 부등식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 삼각함수 부등식을 동시에 만족하는 해의 범위를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:#fff7ed">
+          <td style="text-align:center;font-weight:900">11</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">④</td>
+          <td><div style="font-weight:600;font-size:12px">지수 연립 표현</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 지수 조건이 주어질 때 다른 지수식을 그 두 값으로 표현하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:#fff7ed">
+          <td style="text-align:center;font-weight:900">12</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">①</td>
+          <td><div style="font-weight:600;font-size:12px">이차방정식 두 근 로그</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">이차방정식의 두 근이 각각 로그의 진수일 때 로그 관련 식의 값을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">13</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.8</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">③</td>
+          <td><div style="font-weight:600;font-size:12px">로그방정식</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">밑이 다른 두 로그를 같은 밑으로 변환하여 방정식의 해를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">14</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">②</td>
+          <td><div style="font-weight:600;font-size:12px">부채꼴 넓이</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 부채꼴이 겹친 공연장 구조에서 객석 도형의 넓이를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★ 중</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#fef3c7;color:#78350f;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">내신 기출 변형</span></td>
+        </tr><tr style="background:#fff7ed">
+          <td style="text-align:center;font-weight:900">15</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">④</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 합성</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">주기와 최댓값·최솟값이 주어진 사인함수에서 특정 위치의 함수값을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center;font-weight:700;color:#16a34a">0.0%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:#fff7ed">
+          <td style="text-align:center;font-weight:900">16</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">4.9</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">①</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 (sin+cos → tan)</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">sin과 cos의 합이 주어질 때 tan 값의 정수 계수를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:#fdf2f8">
+          <td style="text-align:center;font-weight:900">17</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.1</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">③</td>
+          <td><div style="font-weight:600;font-size:12px">로그 지수표현 비율 [준킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">지수 조건이 주어질 때 두 변수의 합과 차의 비를 로그로 표현하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center;font-weight:700;color:#b45309">21.7%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span><span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px">킬러</span></td>
+        </tr><tr style="background:">
+          <td style="text-align:center;font-weight:900">18</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.1</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">⑤</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 합성 최대·최소</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">삼각함수를 변환하여 최댓값과 최솟값의 합을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#ffedd5;color:#991b1b;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★ 중상</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">4.3%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span></td>
+        </tr><tr style="background:#fdf2f8">
+          <td style="text-align:center;font-weight:900">19</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.3</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">⑤</td>
+          <td><div style="font-weight:600;font-size:12px">지수방정식 실근 조건 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">절댓값이 포함된 함수를 이용한 지수방정식이 세 실근을 가지는 경우의 수를 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center;font-weight:700;color:#991b1b">56.5%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span><span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px">킬러</span></td>
+        </tr><tr style="background:#fdf2f8">
+          <td style="text-align:center;font-weight:900">20</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.3</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">②</td>
+          <td><div style="font-weight:600;font-size:12px">삼각함수 분할함수 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">두 식으로 나뉜 삼각함수에서 방정식의 실근이 3개가 되도록 하는 값들의 합을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center;font-weight:700;color:#1e40af">17.4%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span><span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px">킬러</span></td>
+        </tr><tr style="background:#fdf2f8">
+          <td style="text-align:center;font-weight:900">21</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace">5.4</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700">④</td>
+          <td><div style="font-weight:600;font-size:12px">로그함수 평행이동+넓이 [킬러]</div><div style="font-size:10.5px;color:var(--g600);margin-top:2px">지수함수를 평행이동한 결과가 조건을 만족할 때 특정 함수값을 구하는 문제</div></td>
+          <td style="text-align:center"><span style="background:#fce7f3;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">★★★★★ 킬러</span></td>
+          <td style="text-align:center;font-weight:700;color:#991b1b">47.8%</td>
+          <td style="text-align:center"><span style="background:#ccfbf1;color:#134e4a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">모의고사 직변형</span><span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:4px">킬러</span></td>
+        </tr></tbody>
+  </table></div></div>
+</div>
+
+<div class="sec">
+  <div class="sh"><div class="sn">9</div><div class="st">고난도·준킬러 문항 심층 분석 (17·19·20·21번)</div></div>
+  <div class="sb">
+    <div class="call danger"><span class="ci">🔴</span>
+      <div><strong>고난도 4문항 공통 특징:</strong> 이 네 문항은 단순한 공식 암기나 계산만으로는 풀 수 없습니다. 조건을 분석하고 그래프를 그리며 여러 경우를 나누어 따지는 능력이 필요합니다. 반 전체에서 가장 많은 학생이 틀린 구간이며, 상위 등급을 결정하는 핵심 변별 문항입니다.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:16px;border-left:4px solid #7c3aed">
+  <div style="font-weight:700;font-size:13px;color:#4c1d95;margin-bottom:8px">
+    17번 — 로그 지수표현 비율 변환 (5.1점) <span style="background:#f5f3ff;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px">준킬러</span>
+  </div>
+  <div style="font-size:12.5px;line-height:1.85;color:#3b0764">
+    <div style="margin-bottom:6px"><b style="color:#5b21b6">풀이 방법:</b> 조건식 양변에 로그를 취하면 x와 y의 비율을 로그의 합과 차로 표현할 수 있습니다. 이 비율을 먼저 구한 뒤 구하는 분수 꼴에 대입하여 분자와 분모를 정리하면 최종적으로 두 수의 로그 비 형태로 깔끔하게 표현됩니다.</div>
+    <div style="margin-bottom:6px"><b style="color:#991b1b">주요 오답 원인:</b> 로그를 취하지 않고 지수 조건만으로 비율을 직접 구하려다 막히는 경우가 가장 많습니다. x와 y의 비율을 먼저 구한 뒤 분수에 대입하는 순서를 지키는 것이 핵심입니다.</div>
+    <div><b style="color:#b45309">반 오답율:</b> 21.7%</div>
+  </div>
+</div><div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:16px;border-left:4px solid #7c3aed">
+  <div style="font-weight:700;font-size:13px;color:#4c1d95;margin-bottom:8px">
+    19번 — 지수방정식 실근 조건 (5.3점) <span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px">킬러</span>
+  </div>
+  <div style="font-size:12.5px;line-height:1.85;color:#3b0764">
+    <div style="margin-bottom:6px"><b style="color:#5b21b6">풀이 방법:</b> 지수방정식을 치환으로 이차방정식으로 변환하면 함수가 취해야 할 두 가지 값을 얻을 수 있습니다. 두 경우 각각에 대해 절댓값이 포함된 함수의 그래프와 수평선의 교점 개수를 조건별로 분류하고, 두 경우를 합쳐서 실근이 정확히 세 개가 되는 순서쌍의 수를 셉니다.</div>
+    <div style="margin-bottom:6px"><b style="color:#991b1b">주요 오답 원인:</b> 치환 후 두 방정식을 분리하지 않고 통합 처리하거나, 자연수 범위 조건을 빠뜨리는 실수가 많습니다. 두 경우를 각각 독립적으로 분석하는 과정이 핵심입니다.</div>
+    <div><b style="color:#b45309">반 오답율:</b> 56.5%</div>
+  </div>
+</div><div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:16px;border-left:4px solid #7c3aed">
+  <div style="font-weight:700;font-size:13px;color:#4c1d95;margin-bottom:8px">
+    20번 — 삼각함수 분할함수 실근 합 (5.3점) <span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px">킬러</span>
+  </div>
+  <div style="font-size:12.5px;line-height:1.85;color:#3b0764">
+    <div style="margin-bottom:6px"><b style="color:#5b21b6">풀이 방법:</b> 두 구간으로 나뉜 삼각함수의 그래프를 각각 그립니다. 수평선을 그었을 때 교점이 정확히 세 개가 되는 경우를 구간별로 꼼꼼히 분류하고, 이 조건을 만족하는 모든 값을 빠짐없이 찾아 합산합니다. 이때 조건을 만족하는 값 자체도 해의 하나로 포함된다는 점을 놓치지 않아야 합니다.</div>
+    <div style="margin-bottom:6px"><b style="color:#991b1b">주요 오답 원인:</b> 두 구간 함수의 최댓값과 최솟값을 혼동하거나, 교점 개수를 구간별로 정밀하게 분류하지 못하는 경우가 많습니다. 조건을 만족하는 값 자체가 해에 포함됨을 빠뜨리는 실수도 빈번합니다.</div>
+    <div><b style="color:#b45309">반 오답율:</b> 17.4%</div>
+  </div>
+</div><div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:16px;border-left:4px solid #7c3aed">
+  <div style="font-weight:700;font-size:13px;color:#4c1d95;margin-bottom:8px">
+    21번 — 로그함수 평행이동 + 삼각형 넓이 (5.4점) <span style="background:#fce7f3;color:#701a75;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px">킬러</span>
+  </div>
+  <div style="font-size:12.5px;line-height:1.85;color:#3b0764">
+    <div style="margin-bottom:6px"><b style="color:#5b21b6">풀이 방법:</b> 지수함수 그래프가 이동한 방향을 두 점의 관계에서 결정합니다. 이동한 점이 특정 직선 위에 있다는 조건으로 두 이동량 사이의 관계를 파악하고, 이후 기울기가 주어진 직선과 로그함수의 교점을 결정합니다. 마지막으로 삼각형 넓이 조건을 이용해 이동량을 역산하면 구하는 함수값을 계산할 수 있습니다.</div>
+    <div style="margin-bottom:6px"><b style="color:#991b1b">주요 오답 원인:</b> 평행이동 후 함수와 원래 함수의 관계를 혼동하거나, 삼각형의 꼭짓점 좌표를 잘못 파악하여 넓이 계산에서 틀리는 경우가 많습니다.</div>
+    <div><b style="color:#b45309">반 오답율:</b> 47.8%</div>
+  </div>
+</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><div class="sn">10</div><div class="st">등급별 목표 문항 및 학습 로드맵</div></div>
+  <div class="sb">
+    <div class="tw"><table>
+      <thead><tr><th style="width:70px">목표등급</th><th>반드시 득점</th><th>추가 확보 목표</th><th>포기 허용</th><th>핵심 학습 내용</th></tr></thead>
+      <tbody>
+        <tr><td style="text-align:center;font-weight:700;color:#16a34a">5등급</td><td>1·4·7번</td><td>2·6·8번 일부</td><td>12번 이후 전체</td><td>거듭제곱근 개수 규칙 / 사분면 삼각비 / 합이 주어질 때 다른 식 구하기</td></tr>
+        <tr><td style="text-align:center;font-weight:700;color:#1d4ed8">4등급</td><td>1~8번</td><td>9·10·13번</td><td>17번 이후 전체</td><td>로그 기본 성질 전체 + 밑이 1보다 작은 로그 부등식 + 삼각비 계산</td></tr>
+        <tr style="background:#fff7ed"><td style="text-align:center;font-weight:700;color:#92400e">3등급</td><td>1~14번</td><td>15·16번</td><td>19번 이후 전체</td><td>로그함수 전 유형 + 삼각함수 부등식 + 삼각함수 합성 그래프</td></tr>
+        <tr style="background:#fef2f2"><td style="text-align:center;font-weight:700;color:#991b1b">2등급</td><td>1~16번 + 18번</td><td>17번</td><td>19·20·21번</td><td>지수 연립 표현 + 이차방정식 두 근 로그 + 삼각함수 합성 완성</td></tr>
+        <tr style="background:#f5f3ff"><td style="text-align:center;font-weight:700;color:#7c3aed">1등급</td><td>1~18번 전체</td><td>19·20·21번 완벽 공략</td><td>없음</td><td>지수방정식 케이스 분류 + 분할함수 그래프 분석 + 로그 평행이동 복합</td></tr>
+      </tbody>
+    </table></div>
+    <div class="call info" style="margin-top:12px"><span class="ci">📚</span>
+      <div><strong>추천 학습 순서:</strong> 거듭제곱근과 지수법칙 기본 계산을 자동화한 뒤 → 로그 성질·방정식·부등식·함수 그래프를 기출 문제로 집중 훈련 → 삼각함수 기본·합성·부등식을 정형화 → 준킬러 로그 지수 비율 변환 문제와 중상 이차방정식 두 근 로그 문제를 반복 → 고난도 세 문항의 그래프 스케치와 케이스 분류 훈련을 매주 반복합니다.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <b>JEET 고등부 죽전캠퍼스</b> · 이동훈 선생님<br>
+  2026년 주간테스트 1차시 개인 성적표 + 청덕고 내신 분석 통합 보고서 | 최지안 (청덕고)<br>
+  범위: 지수 ~ 삼각함수의 그래프 | 시험일 2026.03.04
+</div>
+</div>
+</body>
+</html>
